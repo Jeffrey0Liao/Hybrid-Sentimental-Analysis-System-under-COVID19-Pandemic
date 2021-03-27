@@ -120,8 +120,8 @@ def new_new_tree_topology(tree):
             sudo_idx_data_dict[child_sudo_idx] = str2Int(child_content)
             sudo_idx_data_dict[parent_sudo_idx] = str2Int(parent_content)
             
-            #print('child_sudo_idx:', child_sudo_idx, 'child_content:', child_content)
-            #print('parent_sudo_idx:', parent_sudo_idx, 'parent_content:', parent_content)
+            print('child_sudo_idx:', child_sudo_idx, 'child_content:', child_content)
+            print('parent_sudo_idx:', parent_sudo_idx, 'parent_content:', parent_content)
 
         else:
             if subtree.parent() is None:
@@ -138,15 +138,15 @@ def new_new_tree_topology(tree):
                 sudo_idx_data_dict[child_sudo_idx] = str2Int(child_content)
                 sudo_idx_data_dict[parent_sudo_idx] = str2Int(parent_content)
 
-                #print('child_sudo_idx:', child_sudo_idx, 'child_content:', child_content)
-                #print('parent_sudo_idx:', parent_sudo_idx, 'parent_content:', parent_content)
+                print('child_sudo_idx:', child_sudo_idx, 'child_content:', child_content)
+                print('parent_sudo_idx:', parent_sudo_idx, 'parent_content:', parent_content)
     
     ls = list(sudo_idx_data_dict.items())
     for real_idx in range(len(ls)):
         (sudo_idx, trivial) = ls[real_idx]
         sudo_idx_real_idx_dict[sudo_idx] = real_idx
         
-    #print(sudo_idx_real_idx_dict)
+    print(sudo_idx_real_idx_dict)
     
     for counter in range(len(out_edge_list)):
         sudo_idx_out = out_edge_list[counter]
@@ -154,13 +154,13 @@ def new_new_tree_topology(tree):
         out_edge_list[counter] = sudo_idx_real_idx_dict[sudo_idx_out]
         in_edge_list[counter] = sudo_idx_real_idx_dict[sudo_idx_in]
     
-    #print(out_edge_list, in_edge_list)
+    print(out_edge_list, in_edge_list)
     
     for (k, v) in sudo_idx_data_dict.items():
         # k = sudo_idx_real_idx_dict[k]
         idx_data_dict[sudo_idx_real_idx_dict[k]] = sudo_idx_data_dict[k]
     
-    #print(idx_data_dict)
+    print(idx_data_dict)
     
     key_list, value_list = zip(*(sorted(list(idx_data_dict.items()))))
     return out_edge_list, in_edge_list, list(value_list)
