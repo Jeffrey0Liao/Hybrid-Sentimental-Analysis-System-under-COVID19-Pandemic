@@ -20,3 +20,19 @@ x = np.expand_dims(x, axis=0)
 x = preprocess_input(x)
 features = model.predict(x).squeeze()
 print(type(features), features.shape)
+
+class FeatureExtractor:
+    def __init__(self, model):
+        self.model = model
+        
+    def extract(self, img, ideal_size):
+        x = image.img_to_array(img)
+        x = np.expand_dims(x, axis=0)
+        x = preprocess_input(x)
+        features = self.model.predict(x).squeeze()
+        features = features.reshape(-1, features.shape[-1])
+        return features
+
+fe = FeatureExtractor(model)
+out = fe.extract(IMG_PATH, TARGET_SIZE)
+print(out.shape)
