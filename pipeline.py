@@ -62,3 +62,77 @@ cc_tree = next(lt)
 print(type(cc_tree))
 print(cc_tree)
 nltk.tree.Tree.draw(cc_tree)
+
+# dtype conversion
+# specify and copy graph topology
+# from NLTK format to generic handlable format for pytorch or DGL dataset
+
+node_idx_dict = {}
+node_value_dict = {} 
+
+# define string to integer transformation
+def str2Int(word):
+    if word.isupper():
+        # PAD_WORD
+        return -1
+    else:
+        # normal word, look up for its index in the dictionary
+        return word2Idx[word]
+
+# define node number to construct graph
+def node2Idx(node):
+    (idx, label) = node
+    if idx in node_idx_dict.keys():
+        return node_idx_dict[idx]
+    else:
+        node_idx_dict[idx] = label
+        return idx
+
+#
+def node2Value(node):
+    (idx, label) = node
+    if idx in node_value_dict.keys():
+        return node_value_dict[idx]
+    else:
+        value = str2Int(label)
+        node_value_dict[idx] = value
+        return value
+    
+# define traversal
+def tree_topology(tree):
+    out_edge_list = []
+    in_edge_list = []
+    pt_tree = ParentedTree.convert(tree)
+    idx = 0
+    
+    for subtree in pt_tree.subtrees(): 
+        child = (idx, subtree.label())
+        idx += 1       
+        print('child:',node_value(child),'child node:',node_num(child))        
+        
+        if subtree.parent() is None:
+            print('parent:','NONE','parent node:','NONE')
+        else:
+            parent = (idx, subtree.parent().label())
+            idx += 1
+            print('parent:',node_value(parent),'parent node:',node_num(parent))
+            
+            out_edge_list.append(node_num(child))
+            in_edge_list.append(node_num(parent))
+        print('-----------done----------')
+        
+        if subtree.height()==2:
+            
+            parent = (idx, subtree.label())
+            idx += 1
+            print('child:',node_value(child),'child node:',node_num(child))
+            print('parent:',node_value(parent),'parent node:',node_num(parent))
+            print('----------done-----------')
+            
+            out_edge_list.append(node_num(subtree.flatten()[0]))
+            in_edge_list.append(node_num(subtree.label()))
+
+        
+    key_list, value_list = zip(*(sorted(list(node_value_dict.items()))))
+    return out_edge_list, in_edge_list, list(value_list)
+
