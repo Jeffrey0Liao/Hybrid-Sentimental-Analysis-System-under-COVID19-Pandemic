@@ -1,5 +1,12 @@
 import torch as th
 import torch.nn as nn
+from torch.utils.data import DataLoader
+from torch.utils.data import Dataset
+import torch.nn.functional as F
+import numpy as np
+
+import dgl
+import dgl.function as fn
 
 class TreeLSTMCell(nn.Module):
     def __init__(self, x_size, h_size):
@@ -31,18 +38,50 @@ class TreeLSTMCell(nn.Module):
         # equation (6)
         h = o * th.tanh(c)
         return {'h' : h, 'c' : c}
-      
+
+class Attention(nn.Module):
+        def __init__(self, embed_size, feature_size):
+            super(Attention, self).__init__()
+            
+            self.embed_size = embed_size
+            self.feature_size = feature_size
+            
+            self.linear_in = nn.Linear(feature_size, embed_size, bias=False)
+            self.linear_out = nn.Linear(embed_size+feature_size, feature_size)
+            
+        def forward(self, sent, img):
+            # sent: snetence_len * embed_size
+            # img: num_region * feature_size
+            snetence_len = sent.size(0)
+            num_region = img.size(0)
+            
+            # img_in: num_region * embed_size
+            img_in = self.linear_in(img)
+            
+            atten = th.mm(sent, img_in.transpose(0, 1))
+            # atten = data.masked_fill(mask, -1e6)
+            atten = F.softmax(atten, dim=1)
+            # atten: snetence_len * num_region
+            context = th.mm(atten, img)
+            # context: snetence_len * feature_size
+            output = th.cat((context, sent), dim=1) # output: snetence_len * (feature_size+embed_size)
+            output = th.tanh(self.linear_out(output))
+            # output: snetence_len * embed_size
+            return output, atten
+
 class TreeLSTM(nn.Module):
     def __init__(self,
                  num_vocabs,
                  x_size,
                  h_size,
+                 feature_size, 
                  num_classes,
                  dropout,
                  pretrained_emb=None):
         super(TreeLSTM, self).__init__()
         self.x_size = x_size
         self.embedding = nn.Embedding(num_vocabs, x_size)
+        self.attention = Attention(x_size, feature_size)
         if pretrained_emb is not None:
             print('Using glove')
             self.embedding.weight.data.copy_(pretrained_emb)
@@ -73,6 +112,7 @@ class TreeLSTM(nn.Module):
         g = dgl.graph(g.edges())
         # feed embedding
         embeds = self.embedding(batch.wordid * batch.mask)
+        atten_embeds = self.attention(embeds, batch.image)
         g.ndata['iou'] = self.cell.W_iou(self.dropout(embeds)) * batch.mask.float().unsqueeze(-1)
         g.ndata['h'] = h
         g.ndata['c'] = c
