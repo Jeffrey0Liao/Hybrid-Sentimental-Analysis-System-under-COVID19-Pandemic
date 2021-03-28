@@ -47,9 +47,9 @@ class Attention(nn.Module):
             self.feature_size = feature_size
             
             self.linear_in = nn.Linear(feature_size, embed_size, bias=False)
-            self.linear_out = nn.Linear(embed_size+feature_size, feature_size)
+            self.linear_out = nn.Linear(embed_size+feature_size, embed_size)
             
-        def forward(self, sent, img):
+        def forward(self, sent, img, mask):
             # sent: snetence_len * embed_size
             # img: num_region * feature_size
             snetence_len = sent.size(0)
@@ -59,7 +59,7 @@ class Attention(nn.Module):
             img_in = self.linear_in(img)
             
             atten = th.mm(sent, img_in.transpose(0, 1))
-            # atten = data.masked_fill(mask, -1e6)
+            #atten.data.masked_fill(mask, -1e6)
             atten = F.softmax(atten, dim=1)
             # atten: snetence_len * num_region
             context = th.mm(atten, img)
@@ -67,7 +67,7 @@ class Attention(nn.Module):
             output = th.cat((context, sent), dim=1) # output: snetence_len * (feature_size+embed_size)
             output = th.tanh(self.linear_out(output))
             # output: snetence_len * embed_size
-            return output, atten
+            return output
 
 class TreeLSTM(nn.Module):
     def __init__(self,
@@ -112,8 +112,10 @@ class TreeLSTM(nn.Module):
         g = dgl.graph(g.edges())
         # feed embedding
         embeds = self.embedding(batch.wordid * batch.mask)
-        atten_embeds = self.attention(embeds, batch.image)
-        g.ndata['iou'] = self.cell.W_iou(self.dropout(embeds)) * batch.mask.float().unsqueeze(-1)
+        attn_mask = batch.mask.expand(batch.image.shape[0], batch.wordid.shape[0]).T
+        attn_embeds = self.attention(embeds, batch.image, attn_mask)
+        print(embeds.shape, attn_embeds.shape)
+        g.ndata['iou'] = self.cell.W_iou(self.dropout(attn_embeds)) * batch.mask.float().unsqueeze(-1)
         g.ndata['h'] = h
         g.ndata['c'] = c
         # propagate
