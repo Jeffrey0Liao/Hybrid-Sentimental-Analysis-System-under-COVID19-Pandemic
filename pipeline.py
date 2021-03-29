@@ -16,14 +16,15 @@ import dgl
 
 class Pipeline:
         
-    def __init__(self, path, vocab_size, parser):
+    def __init__(self, path, vocab_size, parser, tagger):
         self.MAX_VOCAB_SIZE = vocab_size
         self.path = path
         self.corpus = self.__build_corpus(path)
         self.idx2Word = self.corpus[0]
         self.word2Idx = self.corpus[1]
         self.parser = parser
-        
+        self.tagger = tagger
+    
     def text_cleaner(self, text):
         # lower case text
         newString = text.lower()
@@ -75,6 +76,37 @@ class Pipeline:
         else:
             return 1
     
+    def labeler(self, content):
+        res = list(self.tagger.polarity_scores(content).values())[:3]
+        sorted_res = np.argsort(res)
+        winner = sorted_res[-1]
+        second = sorted_res[-2]
+        distance = res[winner] - res[second]
+        if winner == 0:
+            if res[winner] > 0.6:
+                return 0
+            else:
+                return 1
+        elif winner == 1:
+            if res[winner] > 0.6:
+                return 2
+            elif distance < 0.3:
+                if second == 0:
+                    return 1
+                elif second == 2:
+                    return 3
+                else:
+                    print('ERROR: invalid labeling!')
+            else:
+                return 2
+        elif winner == 2:
+            if res[winner] > 0.6:
+                return 4
+            else:
+                return 3
+        else:
+            print('ERROR: invalid labeling!')
+    
     def text2DGL(self, sent):
         clean_sent = self.text_cleaner(sent)
         lt = self.parser.raw_parse(clean_sent)
@@ -83,6 +115,7 @@ class Pipeline:
         node_out, node_in, ndata_x, ndata_y, ndata_mask = self.topology(cc_tree)
         g = dgl.graph((node_out, node_in))
         g.ndata['x'] = torch.tensor(ndata_x)
+        g.ndata['y'] = torch.tensor(ndata_y)
         g.ndata['mask'] = torch.tensor(ndata_mask)
         return g
         
@@ -91,6 +124,8 @@ class Pipeline:
     def topology(self, tree):
         sudo_idx_data_dict = {}
         idx_data_dict = {}
+        sudo_idx_label_dict = {}
+        idx_label_dict = {}
         sudo_idx_real_idx_dict = {}
         out_edge_list = []
         in_edge_list = []
@@ -109,6 +144,8 @@ class Pipeline:
                 in_edge_list.append(parent_sudo_idx)
                 sudo_idx_data_dict[child_sudo_idx] = self.str2Int(child_content)
                 sudo_idx_data_dict[parent_sudo_idx] = self.str2Int(parent_content)
+                sudo_idx_label_dict[child_sudo_idx] = self.labeler(child_content)
+                sudo_idx_label_dict[parent_sudo_idx] = self.labeler(parent_content)
 
                 #print('child_sudo_idx:', child_sudo_idx, 'child_content:', child_content)
                 #print('parent_sudo_idx:', parent_sudo_idx, 'parent_content:', parent_content)
@@ -119,13 +156,17 @@ class Pipeline:
                 else:
                     child_sudo_idx = subtree.treeposition()
                     child_content = subtree.label()
+                    child_sub_content = ' '.join(subtree.flatten())
                     parent_sudo_idx = subtree.parent().treeposition()
                     parent_content = subtree.parent().label()
+                    parent_sub_content = ' '.join(subtree.parent().flatten())
 
                     out_edge_list.append(child_sudo_idx)
                     in_edge_list.append(parent_sudo_idx)
                     sudo_idx_data_dict[child_sudo_idx] = self.str2Int(child_content)
                     sudo_idx_data_dict[parent_sudo_idx] = self.str2Int(parent_content)
+                    sudo_idx_label_dict[child_sudo_idx] = self.labeler(child_sub_content)
+                    sudo_idx_label_dict[parent_sudo_idx] = self.labeler(parent_sub_content)
 
                     #print('child_sudo_idx:', child_sudo_idx, 'child_content:', child_content)
                     #print('parent_sudo_idx:', parent_sudo_idx, 'parent_content:', parent_content)
@@ -148,17 +189,20 @@ class Pipeline:
         for (k, v) in sudo_idx_data_dict.items():
             # k = sudo_idx_real_idx_dict[k]
             idx_data_dict[sudo_idx_real_idx_dict[k]] = sudo_idx_data_dict[k]
+        for (k, v) in sudo_idx_label_dict.items():
+            idx_label_dict[sudo_idx_real_idx_dict[k]] = sudo_idx_label_dict[k]
 
         #print(idx_data_dict)
 
         _, value_list = zip(*(sorted(list(idx_data_dict.items()))))
+        _, label_list = zip(*(sorted(list(idx_label_dict.items()))))
         
         for value in value_list:
             mask_list.append(self.masker(value))
         
         #print(mask_list)
         
-        return out_edge_list, in_edge_list, list(value_list), mask_list
+        return out_edge_list, in_edge_list, list(value_list), list(label_list), mask_list
     
     
     def draw_graph(self, sent):
