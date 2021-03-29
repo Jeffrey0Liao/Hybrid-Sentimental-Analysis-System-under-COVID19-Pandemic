@@ -23,7 +23,7 @@ class Pipeline:
         self.idx2Word = self.corpus[0]
         self.word2Idx = self.corpus[1]
         self.parser = parser
-    
+        
     def text_cleaner(self, text):
         # lower case text
         newString = text.lower()
@@ -83,6 +83,7 @@ class Pipeline:
         node_out, node_in, ndata_x, ndata_y, ndata_mask = self.topology(cc_tree)
         g = dgl.graph((node_out, node_in))
         g.ndata['x'] = torch.tensor(ndata_x)
+        g.ndata['mask'] = torch.tensor(ndata_mask)
         return g
         
     
@@ -93,6 +94,7 @@ class Pipeline:
         sudo_idx_real_idx_dict = {}
         out_edge_list = []
         in_edge_list = []
+        mask_list = []
         pt_tree = ParentedTree.convert(tree)
         idx = 0
 
@@ -150,8 +152,13 @@ class Pipeline:
         #print(idx_data_dict)
 
         _, value_list = zip(*(sorted(list(idx_data_dict.items()))))
-                
-        return out_edge_list, in_edge_list, list(value_list), list(label_list), mask_list
+        
+        for value in value_list:
+            mask_list.append(self.masker(value))
+        
+        #print(mask_list)
+        
+        return out_edge_list, in_edge_list, list(value_list), mask_list
     
     
     def draw_graph(self, sent):
