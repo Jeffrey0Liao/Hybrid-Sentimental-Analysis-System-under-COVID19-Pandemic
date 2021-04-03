@@ -10,5 +10,9 @@ This project leverages information from both visual and textual modalities to tr
 * `Somehow Negative` (labeled with 3)
 * `Negative` (labeled with 4)
 
-![](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project-Joint-Sentimental-Analysis-Based-on-Tree-topology/raw/master/resource/f8.png)  
+The model workflow could be referred to as:<br><br>
+![](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project-Joint-Sentimental-Analysis-Based-on-Tree-topology/blob/main/resource/f8.png)
+<br>
 
+## Setup
+This code has been tested on Windows10, Python 3.8.5, Pytorch 1.8.0+cuda 11.1, Numpy 1.17.3, Nvidia RTX2080super, Intel core i7 7700k
