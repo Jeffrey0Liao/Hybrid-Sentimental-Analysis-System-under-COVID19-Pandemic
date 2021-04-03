@@ -10,3 +10,5 @@ This project leverages information from both visual and textual modalities to tr
 * `Somehow Negative` (labeled with 3)
 * `Negative` (labeled with 4)
 
+![](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project-Joint-Sentimental-Analysis-Based-on-Tree-topology/raw/master/resource/f8.jpg)  
+
