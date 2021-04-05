@@ -27,6 +27,16 @@ Several third-party tools are applied to achieve funtionalities. However, some o
 * The image pipeline uses `VGG-19 feature extractor`, it will **automatically download** the pretrained weight for you if not detected. 
 
 ## Train the model
+
+### Datasets
+Datasets in this project is derived from [Stanford Sentiment Treebank](https://nlp.stanford.edu/sentiment/index.html) and [Flickr8k](https://www.kaggle.com/adityajn105/flickr8k/activity). We manipulated original datasets for the joint model. There are three datasets you can use to train the model:
+
+* Download [SST+Generated Dataset]()
+* Download [SST+Scraped Dataset]()
+* Download [TreeFlickr8k Dataset]()
+
+Once you have download the dataset, put it into `data` folder.
+
 To train the model yourself, you can run the `experiment.ipynb` script, hyperparameters are free for adjustment in the script. There are also a visualization system and a check point management system encrypted for evaluating the model. 
 
 States of experiment will be saved once per epoch, the model state dict will be saved in the `experiment_results` folder along with data logs and plots.
