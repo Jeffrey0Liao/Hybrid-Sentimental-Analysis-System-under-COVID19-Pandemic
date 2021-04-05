@@ -1,0 +1,7 @@
+dgl_cu101==0.6.0.post1
+numpy==1.17.3
+tensorflow==2.0.0
+torch==1.8.0+cu111
+nltk==3.3
+dgl==0.6.0.post1
+Pillow==8.2.0
