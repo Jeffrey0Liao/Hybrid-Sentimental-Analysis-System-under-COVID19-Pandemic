@@ -39,7 +39,7 @@ Once you have download the dataset, put it into `data` folder.
 
 To train the model yourself, you can run the `experiment.ipynb` script, hyperparameters are free for adjustment in the script. There are also a visualization system and a check point management system encrypted for evaluating the model. 
 
-States of experiment will be saved once per epoch, the model state dict will be saved in the `experiment_results` folder along with data logs and plots. Some preliminary training results is shown as:
+States of experiment will be saved once per epoch, the model state dict will be saved in the `experiment_results` folder along with data logs and plots. Some preliminary training results are shown as:
 
 ![](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project-Joint-Sentimental-Analysis-Based-on-Tree-topology/blob/main/resource/data.png)
 
