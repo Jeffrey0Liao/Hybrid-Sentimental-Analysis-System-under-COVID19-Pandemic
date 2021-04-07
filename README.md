@@ -41,6 +41,8 @@ To train the model yourself, you can run the `experiment.ipynb` script, hyperpar
 
 States of experiment will be saved once per epoch, the model state dict will be saved in the `experiment_results` folder along with data logs and plots. Some preliminary training results is shown as:
 
+![](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project-Joint-Sentimental-Analysis-Based-on-Tree-topology/blob/main/resource/data.png)
+
 ## Usage
 * If you want to use pretrained model for sentimental classification, download [HS_model_dict.pth]() and put it into the `bin` folder.
 * If you want to use pretrained word to vector model as embeddings, download [word2vec.wv]() and put it into the `bin`folder.
