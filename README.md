@@ -46,8 +46,17 @@ States of experiment will be saved once per epoch, the model state dict will be 
 ## Usage
 * If you want to use pretrained model for sentimental classification, download [HS_model_dict.pth]() and put it into the `bin` folder.
 * If you want to use pretrained word to vector model as embeddings, download [word2vec.wv]() and put it into the `bin`folder.
-* If you want to use a broad scale dictionary to build general corpus, download [text8.txt]() and put it into the `doc` folder.
+* If you want to use a broad scale dictionary to build general corpus, download [text8.txt]() and put it into the `doc` folder. (Note that we recommend you to use text8 corpus for a correct embedding. To some uncommon words that are not included in this corpus, we replaced them with special `<unk>` words for genreality.)
 
-There are two choices for you to use the model:
-1. You can directly run the `main.ipynb` script.
-2. You can run `main.py`, with command line arguments: `-s <sentence> -i <image>`
+The project has predefined strcuture, make sure you have the same directory hierarchy as:
+
+
+
+To run the script, enter the project directory and run `main.py`, with command line arguments: `-s <sentence> -i <image>`, whereas `<sentence>` is the path of your textual input and `<image>` is the path of your image folder. 
+
+For multiple sentences, put them in a single `txt` file one in a line with the format: `image_name.jpg [Tab] Your input sentence here.` Your images should be named accordingly in your image folder.
+
+An examplary commandline would be:
+`python main.py -s C/users/noob/project/input.txt -i C/users/noob/project/images/`
+
+When the program finishes, results will be stored in `result.txt` in `./result/`. The output should match inputs with lines, with a format of `Sentimental Prediction, Confidence: Percentile%`
