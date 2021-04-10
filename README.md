@@ -50,7 +50,7 @@ States of experiment will be saved once per epoch, the model state dict will be 
 
 The project has predefined strcuture, make sure you have the same directory hierarchy as:
 
-
+![](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project-Joint-Sentimental-Analysis-Based-on-Tree-topology/blob/main/resource/hierarchy.png)
 
 To run the script, enter the project directory and run `main.py`, with command line arguments: `-s <sentence> -i <image>`, whereas `<sentence>` is the path of your textual input and `<image>` is the path of your image folder. 
 
@@ -60,3 +60,6 @@ An examplary commandline would be:
 `python main.py -s C/users/noob/project/input.txt -i C/users/noob/project/images/`
 
 When the program finishes, results will be stored in `result.txt` in `./result/`. The output should match inputs with lines, with a format of `Sentimental Prediction, Confidence: Percentile%`
+
+An examplary output should be like:
+![](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project-Joint-Sentimental-Analysis-Based-on-Tree-topology/blob/main/resource/output.png)
