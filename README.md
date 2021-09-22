@@ -44,9 +44,9 @@ States of experiment will be saved once per epoch, the model state dict will be 
 ![](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project-Joint-Sentimental-Analysis-Based-on-Tree-topology/blob/main/resource/data.png)
 
 ## Usage
-* If you want to use pretrained model for sentimental classification, download [HS_model_dict.pth]() and put it into the `bin` folder.
-* If you want to use pretrained word to vector model as embeddings, download [word2vec.wv]() and put it into the `bin`folder.
-* If you want to use a broad scale dictionary to build general corpus, download [text8.txt]() and put it into the `doc` folder. (Note that we recommend you to use text8 corpus for a correct embedding. To some uncommon words that are not included in this corpus, we replaced them with special `<unk>` words for genreality.)
+* If you want to use pretrained model for sentimental classification, download [HS_model_dict.pth](https://github.com/Jeffrey0Liao/2020-2021-Final-Year-Project/tree/main/bin) and put it into the `bin` folder.
+* If you want to use pretrained word to vector model as embeddings, download [word2vec.wv](https://radimrehurek.com/gensim/models/word2vec.html) and put it into the `bin`folder.
+* If you want to use a broad scale dictionary to build general corpus, download [text8.txt](https://github.com/chenyuAndroid/deep-learning-examples/blob/master/glove/corpus/text8.train.txt) and put it into the `doc` folder. (Note that we recommend you to use text8 corpus for a correct embedding. To some uncommon words that are not included in this corpus, we replaced them with special `<unk>` words for genreality.)
 
 The project has predefined strcuture, make sure you have the same directory hierarchy as:
 
