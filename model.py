@@ -84,7 +84,7 @@ class TreeLSTM(nn.Module):
         self.attention = Attention(x_size, feature_size)
         if pretrained_emb is not None:
             print('Using glove')
-            self.embedding.weight.data.copy_(pretrained_emb)
+            self.embedding.from_pretrained(pretrained_emb)
             self.embedding.weight.requires_grad = True
         self.dropout = nn.Dropout(dropout)
         self.linear = nn.Linear(h_size, num_classes)
@@ -114,7 +114,6 @@ class TreeLSTM(nn.Module):
         embeds = self.embedding(batch.wordid * batch.mask)
         attn_mask = batch.mask.expand(batch.image.shape[0], batch.wordid.shape[0]).T
         attn_embeds = self.attention(embeds, batch.image, attn_mask)
-        print(embeds.shape, attn_embeds.shape)
         g.ndata['iou'] = self.cell.W_iou(self.dropout(attn_embeds)) * batch.mask.float().unsqueeze(-1)
         g.ndata['h'] = h
         g.ndata['c'] = c
